@@ -1,5 +1,28 @@
 import numpy as np
 import pennylane as qml
+import sys
+
+sys.path.append("../vqesimulation")
+import quantumsim as qs
+
+def get_state_UCCSD(angle, ansatz_params):
+    ansatz_params["diff_method"] = "best"
+
+    ansazt = qs.uccds_ansatz()
+    ansazt.set_device( ansatz_params )
+    ansazt.set_node( ansatz_params )
+    ansazt.set_exitations( ansatz_params["electrons"], sz=0 )
+    ansazt.set_state( ansatz_params["electrons"], sz=0 )
+    return np.round( np.real( ansazt.get_state( angle ) ), 7)
+
+def get_state_kUpCCGSD(angle, ansatz_params):
+    ansatz_params["diff_method"] = "best"
+
+    ansazt = qs.kupccgsd_ansatz()
+    ansazt.set_device( ansatz_params )
+    ansazt.set_node( ansatz_params )
+    ansazt.set_state( ansatz_params["electrons"], sz=0 )
+    return np.round( np.real( ansazt.get_state( angle ) ), 7)
 
 def space(x):
     x1 = [0.0, 0.0, x*(3/10)*(0.375324205)]
@@ -35,7 +58,7 @@ ansatz_params = {
 }
 
 a,b = qml.kUpCCGSD.shape(k=ansatz_params["repetitions"], n_wires=ansatz_params["qubits"], delta_sz=0)
-singles, doubles = qml.qchem.excitations(mol_params["active_electrons"], mol_params["active_orbitals"], 0)
+singles, doubles = qml.qchem.excitations(mol_params["active_electrons"], mol_params["active_orbitals"]*2, 0)
 singles = len(singles)
 doubles = len(doubles)
 

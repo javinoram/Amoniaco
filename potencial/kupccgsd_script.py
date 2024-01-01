@@ -1,12 +1,12 @@
 
 from base import *
 import pandas as pd
-import vqesimulation as qs
 
 distance = np.linspace(1, 8, 31)
 learning_rate = [0.01, 0.1, 0.2, 0.3, 0.4]
 Phase_energy = []
 Phase_optimum = []
+Phase_state = []
 
 for lr in learning_rate:
     minimizate_params["theta"] = ["adam", lr]
@@ -32,9 +32,12 @@ for lr in learning_rate:
 
         Phase_optimum.append( optimum )
         Phase_energy.append( energy )
+        Phase_state.append( [get_state_kUpCCGSD(angle, ansatz_params) for angle in optimum] )
 
     Phase_energy = pd.DataFrame(Phase_energy)
     Phase_optimum = pd.DataFrame(Phase_optimum)
+    Phase_state = pd.DataFrame(Phase_state)
 
     Phase_energy.to_csv("datos/potencial/Energykupccgsd"+str(lr)+"-"+str(d)+".csv")
     Phase_optimum.to_csv("datos/potencial/Thetakupccgsd"+str(lr)+"-"+str(d)+".csv")
+    Phase_state.to_csv("datos/potencial/Statekupccgsd"+str(lr)+"-"+str(d)+".csv")
